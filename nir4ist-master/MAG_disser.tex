@@ -1,0 +1,364 @@
+%
+% Шаблон магистерской диссертации
+%
+
+\documentclass[a4paper,12pt]{article}
+\usepackage[backend=biber,sorting=none,style=gost-numeric,autolang=other]{biblatex} % библиография
+\usepackage{mathtext} %русские буквы в формулах
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath}
+\usepackage{fancyvrb}
+\usepackage{formular}
+\usepackage{setspace} % управление междустрочными интервалами
+%поля документа
+\usepackage[left=3cm,right=1.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+
+\usepackage{misccorr} % точки в конце номеров разделов, использовать перед пакетом ccaption!
+\usepackage{ccaption} % изменения подписей к рисункам и табл.
+
+\usepackage[nooneline]{caption} 
+\captionsetup[table]{justification=raggedright} % заголовок таблицы выравнивается влево
+\captionsetup[figure]{justification=centering,labelsep=endash} % заголовок рисунка - по центру
+
+% отступ перед первым абзацем
+\usepackage{indentfirst}
+%вставка изображений
+\usepackage{graphicx}
+% счетчики
+\usepackage{totcount}
+% управление содержанием
+\usepackage{tocloft}
+% управление таблицами и рисунками
+\usepackage{float}
+
+\newcounter{mycitecount}                                %% Счётчик библиографии
+\AtEveryBibitem{\stepcounter{mycitecount}}              %% Работает для biblatex
+
+\usepackage[figure,      %
+            table,       %
+            mycitecount, xspace ]{totalcount}           %% Подсчёт общего количества объектов в документе
+
+% окружение для листингов - с нумерацией строк слева
+\DefineVerbatimEnvironment{MyCode}{Verbatim}{frame=lines,numbers=left,numberblanklines=false,framesep=5mm}
+
+% автоматическая нумерация листингов
+\newfloat{Program}{phb}{lop}
+\floatname{Program}{Листинг}
+\floatstyle{ruled}
+
+\setcounter{secnumdepth}{3} % глубина нумерации до подразделов
+
+%если нужны точки в оглавлении для разделов - раскомментируйте следующую команду
+%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\addto\captionsrussian{%
+\renewcommand{\figurename}{Рисунок}%
+\renewcommand{\tablename}{Таблица}%
+}
+
+% дефис в подписи к рисункам
+\captiondelim{ -- } 
+
+% Настройки для окружений с подчеркиваниями для подписей и пр.
+\setFRMfontencoding{T2A}
+\setFRMdfontencoding{T2A}
+% thanks to A.Starikov
+\setFRMfontfamily{cmr}
+\setFRMdfontfamily{ptm}
+\setFRMdfontsize{10pt}
+
+% задает длину поля для подписи на титульной странице
+\newFRMfield{xtitlesign}{32mm}
+
+% поле для факультета или кафедры
+\newFRMfield{fcath}{65mm}
+
+%имя файла с библиографией в формате BibTex
+\addbibresource{rbiblio.bib}
+
+\begin{document}
+
+% счетчики страниц, рисунков, таблиц
+\regtotcounter{page}
+\regtotcounter{figure}
+\regtotcounter{table}
+
+\renewcommand{\refname}{\centerline{СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ}} 
+\renewcommand{\contentsname}{\centerline{СОДЕРЖАНИЕ}} 
+%\renewcommand{\refname}{Список источников}  % По умолчанию "Список литературы" (article)
+%\renewcommand{\bibname}{Литература}  % По умолчанию "Литература" (book и report)
+
+% титульная страница
+\thispagestyle{empty}
+\begin{center} \small
+\textbf{МИНИСТЕРСТВО ОБРАЗОВАНИЯ И НАУКИ РОССИЙСКОЙ ФЕДЕРАЦИИ}\\
+ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ АВТОНОМНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ
+ВЫСШЕГО  ОБРАЗОВАНИЯ\\
+«Национальный исследовательский ядерный университет «МИФИ»\\
+\textbf{Обнинский институт атомной энергетики} – \\
+филиал федерального государственного автономного образовательного учреждения высшего\\
+образования «Национальный исследовательский ядерный университет «МИФИ»\\
+(ИАТЭ НИЯУ МИФИ)
+\end{center}
+%\vfill
+\medskip
+
+% Направление подготовки следует уточнять,
+% магистры и бакалавры могут иметь разные наименования
+\begin{center}
+\begin{tabular}{rl}
+Отделение & \useFRMfield{fcath}[\large Интеллектуальные кибернетические системы] \\ 
+%Направление подготовки & \useFRMfield{fcath}[\large Информационные системы и технологии] \\ 
+\end{tabular} 
+\end{center}
+
+\vfill
+
+\large 
+
+\begin{center}
+\textbf{\Large Выпускная квалификационная работа --- } \\
+\textbf{\Large магистерская диссертация}\\
+	
+	\medskip
+по направлению подготовки: \textbf{09.04.02 Информационные системы и технологии}\\
+
+Направленность (профиль): \textbf{Информационные системы}
+	
+\vfill
+\vfill
+\medskip
+
+\textbf{\Large 
+		<<Контроль электроэнергии и водоснабжения в рамках Умного города>>
+	}
+	
+\end{center}
+
+\vspace{1cm}
+
+\begin{tabular*}{\textwidth}{p{78mm}p{33mm}p{64mm}}
+	Выполнил:\\студент гр. ИС-М18 & \useFRMfield{xtitlesign} & Кузнецов~А.В.\\
+	& & \\
+	Руководитель ВКР,\\
+	профессор отделения ИКС, \\
+	докт.техн.наук & \useFRMfield{xtitlesign} & Яцало~Б.И. \\
+	& & \\
+	
+	Нормоконтроль & \useFRMfield{xtitlesign} & Пичугина~И.А. \\
+	& & \\
+	% Если нужно добавить консультанта - раскомментируйте две строчки ниже
+	%Консультант ВКР бакалавра\\организация, должность, звание  & \useFRMfield{xtitlesign} & К.О.Нсультант\\
+	%& & \\
+%	Рецензент\\к.ф.-м.н.,   & \useFRMfield{xtitlesign} & В.А. Чепурко\\
+	
+	& & \\
+	Выпускная квалификационная \\ работа допущена к защите & \useFRMfield{xtitlesign} &  \\
+	& & \\
+	Руководитель\\ образовательной программы \\
+	09.04.02 Информационные системы и технологии,\\
+	докт.техн.наук  & \useFRMfield{xtitlesign} &Яцало~Б.И. \\
+	
+\end{tabular*}
+
+
+\vfill
+\large
+
+\begin{center}
+Обнинск, 2020 г
+\end{center}
+
+\onehalfspacing
+
+\pagebreak
+
+% реферат
+\thispagestyle{empty}
+
+\section*{\centering РЕФЕРАТ}
+
+\total{page} стр., \total{table} табл., \total{figure} рис., \totalmycitecounts ист. 
+
+УМНЫЙ ГОРОД, ИНТЕРНЕТ ВЕЩЕЙ, СИСТЕМА УЧЕТА РЕСУРСОВ, ПРИБОР УЧЕТА, АНАЛИЗ ДАННЫХ, POSTGRESQL, JAVA
+
+ПРИБОР УЧЕТА
+Настоящая работа посвящена изучению перспектив создания Умного города, разработке алгоритма поиска проблемных счетчиков электроэнергии и водоснабжения, анализу показаний квартирных и домовых приборов учета.
+
+Разработанная система учета ресурсов позволяет жильцам получить часовые, суточные и ежемесячные данные в виде таблиц и графиков.
+
+\pagebreak
+\thispagestyle{empty}
+
+\section*{\centering ОПРЕДЕЛЕНИЯ}
+
+Умный город --- концепция интеграции нескольких информационных и коммуникационных технологий (ИКТ) и интернета вещей (IoT решения) для управления городским имуществом.
+
+Интернет вещей (Internet of Things, IoT) --- концепция вычислительной сети физических предметов («вещей»), оснащённых встроенными технологиями для взаимодействия друг с другом или с внешней средой, рассматривающая организацию таких сетей как явление, способное перестроить экономические и общественные процессы, исключающее из части действий и операций необходимость участия человека. 
+
+Геркон --- электромеханическое коммутационное устройство, изменяющее состояние подключённой электрической цепи при воздействии магнитного поля от постоянного магнита или внешнего электромагнита, например, соленоида.
+
+\pagebreak
+
+\section*{\centering ОБОЗНАЧЕНИЯ И СОКРАЩЕНИЯ}
+
+
+СКАУТ --- Система коммунального автомониторинга управления и телеметрии
+
+АРМ --- Автоматизированное рабочее место
+
+ПУ --- Прибор учета
+
+ПО --- Программное обеспечение
+
+ГВС --- Горячее водоснабжение
+
+ХВС --- Холодное водоснабжение
+
+
+
+\pagebreak
+
+
+
+\tableofcontents
+% если нужно добавить "Стр." над номерами страниц - раскомментируйте следующую команду
+%\addtocontents{toc}{~\hfill\textbf{Стр.}\par}
+
+\pagebreak
+
+\section*{\centering ВВЕДЕНИЕ}
+\addcontentsline{toc}{section}{ВВЕДЕНИЕ}
+\input{intro} % текст введения в файле intro.tex
+\pagebreak
+
+%\input{Post_zad}
+\pagebreak
+\input{part1}  % первая глава - в файле part1.tex
+\pagebreak
+\input{part2} % вторая глава - в файле part2.tex
+\pagebreak
+\input{part3}  % третья глава - в файле part3.tex
+\pagebreak
+\input{part4} % четвертая глава - в файле part4.tex
+\pagebreak
+\input{part5}  % пятая глава - в файле part5.tex
+\pagebreak
+
+\section*{\centering ЗАКЛЮЧЕНИЕ}
+\addcontentsline{toc}{section}{ЗАКЛЮЧЕНИЕ}
+
+В России интерес к тематике Умного города растет с каждым годом, в том числе потому, что многие города подходят к пределам надежности и функциональности существующей инфраструктуры.
+
+По результатам исследования, было рассмотрено несколько проектов Умный город. Выделены три группы проблем при разработке и реализации концепции Умного города в России. Изучены перспективы развития Умного города в Обнинске.
+
+Проведен обзор функций аппаратно-программного комплекса СКАУТ.
+
+Разработана система квартирного учета потребления ресурсов. 
+
+Сформирована единая база данных. 
+
+Проведен анализ показаний квартирных и домовых приборов учета, с помощью основных алгоритмов поиска проблемных счетчиков электроэнергии и водоснабжения. Разработан автоматизированный анализ данных.
+
+Реализовано программное обеспечение по контролю приборов учета.
+
+В связи с тем, что большинство современных счетчиков поддерживает протокол ModBus, появилась возможность усовершенствования системы и переноса отработанных алгоритмов анализа на web-платформу. Также планируется реализация новых задач анализа данных.
+
+
+% оформление библиографии - вариант с БД
+\pagebreak
+
+\addcontentsline{toc}{section}{СПИСОК ИСПОЛЬЗОВАННОЙ ЛИТЕРАТУРЫ}
+% ВАЖНО: для корректного отображения в списке литературы ссылок на англ.языке в bibtex-описание источника следует добавить поле 
+% langid = {english}
+\printbibliography
+
+\pagebreak
+
+\section*{ \centering Приложение А} 
+\addcontentsline{toc}{section}{Приложение А}
+
+\begin{center}
+Формат текстовых данных на домовом сервере \verb|HashMapValue|
+\end{center}
+
+\subsection*{Формат файла данных о счетчиках}
+Файл представляет собой CSV файл (разделение символом ; ). Название counters.txt
+Поля:
+\begin{enumerate}
+	\item Порт компьютера;
+	\item Адрес КПУ на шине;
+	\item Номер клеммы;
+\end{enumerate}
+Пример: /dev/ttyUSB0;05;3
+
+\subsection*{Формат файла данных с показаниями}
+Файл представляет собой CSV файл (разделение символом ; ). Название data.txt
+Поля:
+\begin{enumerate}
+	\item Порт компьютера;
+	\item Адрес КПУ на шине;
+	\item Номер клеммы;
+	\item Дата;
+	\item Время (час без указания минут);
+	\item Показание.
+\end{enumerate}
+Пример: /dev/ttyUSB0;05;3;10.10.2017;12;34.5
+
+\section*{ \centering Приложение Б} 
+\addcontentsline{toc}{section}{Приложение Б}
+
+\pagebreak
+
+\begin{center}
+База данных на сервере данных \verb|HashMapValue|
+\end{center}
+
+\subsection*{Концептуальная схема БД}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.2\linewidth]{pics/pril1} 
+\end{figure}
+
+\pagebreak
+
+\subsection*{Физическая схема БД}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.2\linewidth]{pics/pril2} 
+\end{figure}
+
+\pagebreak
+
+\section*{ \centering Приложение В} 
+\addcontentsline{toc}{section}{Приложение В}
+
+\begin{center}
+	Кусок кода программного обеспечения системы учета ресурсов \verb|HashMapValue|
+\end{center}
+
+\begin{MyCode}
+
+public class HashMapValue {
+	
+	protected String filename; 
+	protected HashMap<String, String> hashValue = 
+	new HashMap<>();
+	protected HashMap<String, Boolean> hashKeysFlag =
+	 new HashMap<>();
+	
+	public void setData(String key, String value) {
+		hashValue.put(key, value);
+	}
+	
+	public String getData(String key) {
+		return hashValue.get(key);
+	}
+    /* ... */
+}
+\end{MyCode}
+
+\end{document}          
+
