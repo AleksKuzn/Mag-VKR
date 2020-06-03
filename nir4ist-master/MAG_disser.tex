@@ -281,7 +281,7 @@
 	\item Протестирована и оптимизирована программа системы учета ресурсов;	
 \end{enumerate}
 
-Полученные результаты помогли выявить 47 неисправных счетчиков. В дальнейшем планируется разработать алгоритм анализа данных теплосчетчиков. Возможность снижения расхода тепловой энергии на отопление неотъемлемая часть будущего Умного города.
+Полученные результаты помогли выявить 78 неисправных счетчиков. В дальнейшем планируется разработать алгоритм анализа данных теплосчетчиков. Возможность снижения расхода тепловой энергии на отопление неотъемлемая часть будущего Умного города.
 
 
 % оформление библиографии - вариант с БД
@@ -327,34 +327,198 @@
 \pagebreak
 \section*{ \centering Приложение Б --- Результаты работы} 
 \addcontentsline{toc}{section}{Приложение Б}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\linewidth]{pics/1}
+	\caption{Главное меню}
+	\label{fig:1}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{pics/2}
+	\caption{Обрыв линии или не обновились показания}
+	\label{fig:2}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{pics/4}
+	\caption{Добавление нового СКАУТ}
+	\label{fig:4}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{pics/6}
+	\caption{Замена КПУ}
+	\label{fig:6}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{pics/9}
+	\caption{Показания прибора учета}
+	\label{fig:9}
+\end{figure}
+
 \pagebreak
 
 \section*{ \centering Приложение В --- Листинг программы} 
 \addcontentsline{toc}{section}{Приложение В}
-
+Метод заполнения таблицы с информацией о замененных КПУ:
 \begin{MyCode}
 	
-	public class HashMapValue {
+	def select_line_state(self):
+		self.tableWidget_replaceKPU.hide()
+		self.tableWidget_replacePU.hide()
+		self.label_replaceKPU.hide()
+		self.label_replacePU.hide()
+		self.tableWidget_lineState.show()
+		self.label_lineState.show()
+		self.tableWidget_lineState.setRowCount(0)       
+		sql_query = """ SELECT  
+			city.city_name, street.street_name,
+			house.house_number,
+			entrance.num_entr,		 	
+			flat.flatfloor,		 	
+			flat.num_flat,		 	
+			kpu.ser_num,
+			counter.klemma,				
+			counter.serial_number,
+			case counter.type_counter 		 	
+			when 1 then 'ГВС'
+			when 2 then 'ХВС'
+			when 3 then 'Т'
+			when 4 then 'Э' 
+			end AS Тип,
+			marka.name_marka,
+			date_value.value_zn,
+			date_value.impulse_value,	
+			date_value.line_state,	
+			date_value.empty,  	 
+			counter.last_date
 		
-		protected String filename; 
-		protected HashMap<String, String> hashValue = 
-		new HashMap<>();
-		protected HashMap<String, Boolean> hashKeysFlag =
-		new HashMap<>();
+		FROM cnt.counter
+			left join public.flat
+			on flat.id_flat = counter.id_flat
+			left join cnt.date_value
+			on counter.id_klemma = date_value.id_klemma
+			left join cnt.kpu 
+			on kpu.id_kpu = counter.id_kpu
+			left join cnt.marka
+			on counter.id_marka = marka.id_marka
+			left join public.entrance
+			on entrance.id_entr = flat.id_entr
+			left join public.house
+			on house.id_house = entrance.id_house
+			left join public.street
+			on street.id_street = house.id_street
+			left join public.city
+			on city.id_city = street.id_city  
 		
-		public void setData(String key, String value) {
-			hashValue.put(key, value);
-		}
+		WHERE 
+			date_value.date_val = counter.last_date
+			and (date_value.line_state = 1								
+			or date_value.empty = 1)								
+			and working_capacity = 'TRUE'
+			
+		order by city.city_name DESC, street.street_name 
+		DESC, cast(substring(house.house_number from 
+		\'^[0-9]+\') as integer) DESC, 
+		cast(entrance.num_entr as integer) DESC,
+		flat.num_flat DESC, date_value.date_val DESC,
+		counter.type_counter DESC"""
 		
-		public String getData(String key) {
-			return hashValue.get(key);
-		}
+		cur = conn.cursor()
+		cur.execute(sql_query)   
+		data = cur.fetchall()
+		for index,row in enumerate(data):
+			self.tableWidget_lineState.insertRow(0)
+			for k in range(len(row)):
+				item = QTableWidgetItem
+				('' if data[index][k]==None 
+				else str(data[index][k]))                 
+				self.tableWidget_lineState.
+				setItem(0,k,item)               
+		cur.close()    
+		self.tableWidget_lineState.resizeColumnsToContents()
 		/* ... */
 	}
 \end{MyCode}
 
-\end{document}          
+Метод заполнения выпадающего списка:
+\begin{MyCode}
+def filtr_city(self):
+	self.comboBox_city.clear()        
+	self.comboBox_city.id = []       
+	self.comboBox_city.addItem('')
+	cur = self.conn.cursor()
+	city_query = """SELECT DISTINCT
+		city.city_name,	
+		city.id_city 
+		FROM    
+		public.entrance	
+		left join public.house
+		on house.id_house = entrance.id_house
+		left join public.street
+		on street.id_street = house.id_street
+		left join public.city
+		on city.id_city = street.id_city
+		order by city.city_name"""
+	cur.execute(city_query)
+	data = cur.fetchall()
+	self.list_id_city = [0]
+\end{MyCode}
+Метод слежения таблицы за перемещением курсора мышки:
+\begin{MyCode}
+def line_selection(self, row, column):
+ if self.current_hover != row:
+  for j in range(self.tableWidget_kpu.columnCount()):
+   if self.tableWidget_kpu.item(self.current_hover,10).text()=='0':        
+    self.tableWidget_kpu.item(self.current_hover, j).
+    setBackground(QtGui.QColor(245,245,245))                   
+   else:
+    self.tableWidget_kpu.item(self.current_hover, j).
+    setBackground(QBrush(QColor('white')))
+   self.tableWidget_kpu.item(row, j).
+   setBackground(QBrush(QColor('lightGray')))
+  self.current_hover = row	
+\end{MyCode}
 
+Метод соединения с локальной базой данных:
+\begin{MyCode}
+def create_connection_firebird(self):
+ try:
+  self.connection = None
+  self.connection = fdb.connect(
+  host=self.ip_rassbery,
+  database=self.fdb_path,
+  user=self.fdb_login,
+  password=self.fdb_password
+  )
+  print("\nConnection to the FireBird DB successful.
+  \nhost = ",self.ip_rassbery,"\nname = ",
+  self.fdb_path,"\nuser = ",self.fdb_login,"\npassword = ",
+  self.fdb_password)
+ except:
+  msg = QMessageBox()
+  msg.setWindowTitle("Ошибка")
+  msg.setText("Не удалось подключиться к локальной базе данных.")
+  msg.setInformativeText("Хотите отредактировать данные СКАУТ 
+  или продолжить без добавления КПУ в базу данных FireBird?")
+  msg.setDetailedText("host = "+str(self.ip_rassbery)+"\nname =
+   "+str(self.fdb_path)+"\nuser = "+str(self.fdb_login)+
+   "\npassword = "+str(self.fdb_password))
+  scautButton = msg.addButton('СКАУТ', QMessageBox.AcceptRole)
+  continueButton = msg.addButton('Продолжить',
+  QMessageBox.RejectRole)
+  msg.exec()
+  if msg.clickedButton() == scautButton:
+   self.add_scaut = scaut.Add_Scaut(self.val_id_entr,self.conn)
+  if msg.clickedButton() == continueButton:
+   self.checkBox.setChecked(False)
+   self.val_workability = False
+  print (traceback.format_exc())
+\end{MyCode}
+
+\end{document}          
 
 \end{document}          
 
